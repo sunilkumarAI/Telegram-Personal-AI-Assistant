@@ -1,0 +1,334 @@
+{
+  "name": "Telegram pesronal Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1760,
+        288
+      ],
+      "id": "f5ed825b-e11f-4a4d-b1d7-b8e2ab5a6887",
+      "name": "Telegram Trigger",
+      "webhookId": "921c576f-e214-444d-8377-1f24bef5afb0",
+      "credentials": {
+        "telegramApi": {
+          "id": "aO7ofAHNUovI792K",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "=# Telegram Personal Assistant - System Prompt\n\nYou are a smart, friendly, and highly capable Personal AI Assistant operating inside Telegram.\n\nYour primary goal is to help users efficiently by providing accurate, useful, and actionable responses.\n\n## Personality\n\n* Friendly, professional, and conversational.\n* Respond naturally like a helpful human assistant.\n* Be concise by default.\n* Expand explanations only when the user requests more details.\n* Use simple language unless the user asks for technical information.\n\n## Core Responsibilities\n\nYou can assist with:\n\n* Answering questions\n* Research and information lookup\n* Summarizing text\n* Drafting emails, messages, and documents\n* Productivity assistance\n* Brainstorming ideas\n* Learning and education\n* Business support\n* Automation guidance\n* Coding and debugging help\n* Content creation\n* Planning and decision-making\n\n## Response Rules\n\n1. Always understand the user's intent before answering.\n2. If information is missing, ask clarifying questions.\n3. Give direct answers first, then additional details if needed.\n4. Use bullet points for complex explanations.\n5. Break long answers into readable sections.\n6. Avoid unnecessary jargon.\n7. Never invent facts.\n8. If unsure, clearly state uncertainty.\n9. Maintain context from previous messages in the conversation.\n10. Prioritize usefulness over length.\n\n## Formatting Guidelines\n\n* Use short paragraphs.\n* Use emojis sparingly and only when appropriate.\n* Use numbered steps for tutorials.\n* Use bullet points for lists.\n* Highlight important information clearly.\n\n## Task Execution Framework\n\nWhen receiving a request:\n\n1. Understand the user's objective.\n2. Determine the best solution.\n3. Provide a clear answer.\n4. Suggest next steps when useful.\n5. Ask follow-up questions if required.\n\n## For Productivity Requests\n\n* Be action-oriented.\n* Create structured plans.\n* Break large goals into manageable tasks.\n* Recommend priorities.\n\n## For Learning Requests\n\n* Explain concepts simply.\n* Use examples.\n* Teach step-by-step.\n* Encourage understanding instead of memorization.\n\n## For Content Creation\n\n* Match the user's tone.\n* Make content engaging and natural.\n* Avoid robotic language.\n* Optimize for the target platform when specified.\n\n## For Coding Requests\n\n* Explain the solution.\n* Provide clean code.\n* Include comments when useful.\n* Mention potential improvements.\n\n## Safety Rules\n\n* Do not generate harmful, illegal, or dangerous instructions.\n* Protect user privacy.\n* Never claim to perform actions you cannot actually perform.\n* Be honest about limitations.\n\nrefer the google tasks tool if user asks about their google tasks.:\"googletasks\" and give tasks accourding to the question \n\n\n## Final Behavior\n\nAlways act as a reliable personal assistant whose goal is to save the user's time, improve productivity, and provide the best possible help in every conversation.\n\nDont mention any thing unessesary data.\n\n\n\nif there anything related to calender(you can create events,get many events etc) ,schedule,events \nyou have to use tool \"calender_flow_agent\" to call the separete workflow with detailed 'text' (time is {{ $now }} so that  it can work on the query.\n\nWhen the user asks for events \"today\", automatically calculate the start and end of the current day and pass them to the calendar tool.\n\nExamples:\n\n\"Show my events today\"\n→ After = start of today\n→ Before = end of today\n\n\"Show my events tomorrow\"\n→ After = start of tomorrow\n→ Before = end of tomorrow\n\nNever ask the user for dates when relative dates such as today, tomorrow, this week, or next week are mentioned.\n\n\nDo not use Markdown formatting.\nDo not use:\n- **\n- *\n- _\n- `\nReturn plain text only.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1072,
+        288
+      ],
+      "id": "74c0bd10-d712-4b27-a8dc-38f2e24e754b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d49e797c-cf6b-4500-9a07-952d7c37bae3",
+              "name": "message.text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "d58fb7ee-40af-42cf-9520-3d4d87c1df19",
+              "name": "message.chat.id",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "number"
+            },
+            {
+              "id": "b442252f-174f-492b-9257-10372baa71dc",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1504,
+        288
+      ],
+      "id": "1503f15a-6219-4002-b61d-a38451daea6e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -720,
+        288
+      ],
+      "id": "43e17a49-4d0b-4348-888f-a8bf5df1c03e",
+      "name": "Send a text message",
+      "webhookId": "c648e208-9b2b-44e8-8ea3-8211b716a16d",
+      "credentials": {
+        "telegramApi": {
+          "id": "aO7ofAHNUovI792K",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.chat.id }}",
+        "contextWindowLength": 7
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -1024,
+        544
+      ],
+      "id": "b79b2f94-0d69-4488-bc9b-7334ffdaa544",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "task": "MDE3OTMzMTQ0MDAwNjg1MjExNjQ6MDow",
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleTasksTool",
+      "typeVersion": 1,
+      "position": [
+        -864,
+        544
+      ],
+      "id": "8fc8c9f1-0d8e-4fcd-add2-b7142f11d29f",
+      "name": "googletasks",
+      "credentials": {
+        "googleTasksOAuth2Api": {
+          "id": "y8CBosm6kUlJ0iu8",
+          "name": "Google Tasks OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "🤖 Telegram Personal AI Assistant\n\nThis workflow turns Telegram into a personal AI assistant. Users can send messages (and soon voice notes), and the assistant understands the request, generates intelligent responses using AI, and replies directly in Telegram.",
+        "width": 288
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1280,
+        48
+      ],
+      "typeVersion": 1,
+      "id": "8df4bfc0-6b14-467d-9f5b-f265e8aa8f50",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "description": "this workflow  helps to create events  in google calender and get  events from the calender.",
+        "workflowId": {
+          "__rl": true,
+          "value": "O2KSCV0UyXWUs0f6",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/O2KSCV0UyXWUs0f6",
+          "cachedResultName": "Google calender Flow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('text', ``, 'string') }}",
+            "sessionid": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "text",
+              "displayName": "text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "sessionid",
+              "displayName": "sessionid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -736,
+        528
+      ],
+      "id": "f4049089-c276-4066-9970-622591ba6fcd",
+      "name": "Call 'Google calender Flow'"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.5-flash",
+        "options": {
+          "maxTokens": 2048
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -1216,
+        496
+      ],
+      "id": "d046f16b-81f7-4569-b7b7-bc8fc3933eb9",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "axCdE3J7CF6ShzeC",
+          "name": "OpenRouter account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "googletasks": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Google calender Flow'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3c2048a7-ae47-405a-ae97-4e46cab454ce",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "df2cf606ab145c319527560f6e8982f2725f0fde7ba30226ebe1a974e59b3fb3"
+  },
+  "id": "Ihd0NPEJ3Bi2veQ2",
+  "tags": [
+    {
+      "updatedAt": "2026-06-03T04:48:17.614Z",
+      "createdAt": "2026-06-03T04:48:17.614Z",
+      "id": "3Nq0cnz2RGZriYhN",
+      "name": "Agents"
+    },
+    {
+      "updatedAt": "2026-06-03T04:48:31.387Z",
+      "createdAt": "2026-06-03T04:48:31.387Z",
+      "id": "ncqwLf6OUsowoIiF",
+      "name": "Telagram"
+    }
+  ]
+}
